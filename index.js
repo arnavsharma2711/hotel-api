@@ -11,11 +11,10 @@ const port = process.env.port || 8080;
 // Create a new Express.js app
 const app = express();
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 
 // Configure body-parser middleware to handle JSON data
 app.use(bodyParser.json());
