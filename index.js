@@ -11,10 +11,11 @@ const port = process.env.port || 8080;
 // Create a new Express.js app
 const app = express();
 
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
-
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+  })
+);
 
 // Configure body-parser middleware to handle JSON data
 app.use(bodyParser.json());
@@ -36,15 +37,18 @@ const roomSchema = new mongoose.Schema({
 const Room = mongoose.model("Room", roomSchema);
 
 // Create a MongoDB schema for bookings
-const bookingSchema = new mongoose.Schema({
-  userEmail: { type: String, required: true },
-  roomNumber: { type: String, required: true },
-  startTime: { type: Date, required: true },
-  endTime: { type: Date, required: true },
-  price: { type: Number, required: true },
-  paymentType: { type: String, required: false },
-  tip: { type: Number, required: false },
-});
+const bookingSchema = new mongoose.Schema(
+  {
+    userEmail: { type: String, required: true },
+    roomNumber: { type: String, required: true },
+    startTime: { type: Date, required: true },
+    endTime: { type: Date, required: true },
+    price: { type: Number, required: true },
+    paymentType: { type: String, required: false },
+    tip: { type: Number, required: false },
+  },
+  { timestamps: true }
+);
 
 // Create a MongoDB model for bookings
 const Booking = mongoose.model("Booking", bookingSchema);
@@ -75,6 +79,18 @@ app.get("/rooms/:roomNumber", async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
+});
+app.get("/bookings/:id", async (req, res) => {
+  try {
+    const book = await Booking.findOne({ _id: req.params.id });
+    if(book){
+    res.json(book);
+  } else {
+    res.status(404).json({ message: "Booking not found" });
+  }
+} catch (err) {
+  res.status(500).json({ message: err.message });
+}
 });
 
 app.post("/rooms", async (req, res) => {
@@ -176,5 +192,5 @@ app.delete("/bookings/:id", async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-  console.log("Server started on port "+port);
+  console.log("Server started on port " + port);
 });
